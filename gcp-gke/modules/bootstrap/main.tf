@@ -52,7 +52,7 @@ resource "null_resource" "install_istio_operator" {
   provisioner "local-exec" {
     command = <<EOH
 if ! command -v kubectl; then alias kubectl=./kubectl; fi;
-curl -sL https://istio.io/downloadIstioctl | sh -
+curl -sL https://istio.io/downloadIstioctl | ISTIO_VERSION=1.7.5 sh -
 export PATH=$PATH:$HOME/.istioctl/bin
 istioctl operator init
 kubectl label namespace default istio-injection=enabled --overwrite
