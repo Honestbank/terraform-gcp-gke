@@ -2,7 +2,7 @@
 ### Examples are provided below:
 
 ### Full GCP project name
-google_project = "test-terraform-project-01"
+google_project = "test-terraform-project-compute"
 
 ### GCP region
 google_region = "asia-southeast2"

@@ -31,7 +31,7 @@ provider "google" {
 }
 
 terraform {
-  required_version = ">= 0.13.1"
+  required_version = ">= 0.14.0"
 
   required_providers {
     external = {
@@ -39,11 +39,11 @@ terraform {
     }
 
     google = {
-      version = ">= 3.0.0, <= 4.0.0"
+      version = ">= 3.51.0, < 4.0.0"
     }
 
     google-beta = {
-      version = ">= 3.0.0"
+      version = ">= 3.51.0, < 4.0.0"
       source  = "hashicorp/google-beta"
     }
 
@@ -107,6 +107,38 @@ resource "google_project_iam_binding" "compute-network-user" {
     "serviceAccount:${format("service-%s@container-engine-robot.iam.gserviceaccount.com", local.project_number)}",
     "serviceAccount:${format("%s@cloudservices.gserviceaccount.com", local.project_number)}",
   ]
+}
+
+# VPC
+module "shared-vpc" {
+  source = "./modules/terraform-google-network"
+
+  project_id = var.shared_vpc_host_google_project
+  network_name = "${local.cluster_name}-vpc"
+  routing_mode = "REGIONAL"
+
+  subnets = [
+    {
+      subnet_name = "${local.cluster_name}-subnet"
+      subnet_ip = "10.10.0.0/16"
+      subnet_region = "asia-southeast2"
+      subnet_private_access = "true"
+      subnet_flow_logs = "off"
+    }
+  ]
+
+  secondary_ranges = {
+    "${local.cluster_name}-subnet" = [
+      {
+        range_name = "private-vpc-pods"
+        ip_cidr_range = "10.20.0.0/16"
+      },
+      {
+        range_name = "private-vpc-services"
+        ip_cidr_range = "10.30.0.0/16"
+      }
+    ]
+  }
 }
 
 # GKE Cluster Config
@@ -187,6 +219,8 @@ module "primary-cluster" {
       "https://www.googleapis.com/auth/logging.write",
     ]
   }
+
+  depends_on = [module.shared-vpc]
 }
 
 # We use this data provider to expose an access token for communicating with the GKE cluster.
@@ -207,18 +241,20 @@ resource "google_compute_address" "cloud_nat_ip" {
   name     = "gke-nat"
 }
 
-module "cloud_nat" {
-  providers = {
-    google = google.vpc
-  }
-  source        = "terraform-google-modules/cloud-nat/google"
-  version       = "~> 1.3.0"
-  project_id    = var.shared_vpc_host_google_project
-  region        = var.google_region
-  router        = "gke-router"
-  network       = local.network_name
-  create_router = true
-  nat_ips       = [google_compute_address.cloud_nat_ip.self_link]
+module "cloud_router" {
+  source  = "terraform-google-modules/cloud-router/google"
+  version = "~> 0.4"
+
+  name    = "gke-cluster-cloud-router"
+  project = var.shared_vpc_host_google_project
+  network = local.network_name
+  region  = var.google_region
+
+  nats = [{
+    name = "gke-cluster-cloud--nat"
+  }]
+
+  depends_on = [module.shared-vpc]
 }
 
 # Providers for Bootstrap

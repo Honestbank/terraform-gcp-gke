@@ -6,9 +6,9 @@ testing.
 To run tests, first export the needed env vars:
 
 ```bash
-export GOOGLE_PROJECT='test-terraform-project-01'
+export GOOGLE_PROJECT="test-terraform-project-compute"
 export GOOGLE_CREDENTIALS=$(cat <GCP_SERVICE_ACCOUNT_KEYFILE.JSON>)
-export TF_VAR_shared_vpc_host_google_project="test-gcp-project-01-274314"
+export TF_VAR_shared_vpc_host_google_project="test-terraform-shared-vpc"
 export TF_VAR_shared_vpc_host_google_credentials=$(cat <GCP_VPC_SERVICE_ACCOUNT_KEYFILE.JSON>)
 ```
 

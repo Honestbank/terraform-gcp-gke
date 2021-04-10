@@ -1,12 +1,17 @@
 # #########################
 # Set environment variables
+#
+# Generate JSON keyfiles for each GCP project and place them into:
+# * Compute project -     gcp-gke/compute.json
+# * Shared VPC project -  gcp-gke/vpc.json
 # #########################
 
-export GOOGLE_PROJECT='test-terraform-project-01'
-export TF_VAR_shared_vpc_host_google_project="test-gcp-project-01-274314"
+export GOOGLE_PROJECT="test-terraform-project-compute"
+export TF_VAR_shared_vpc_host_google_project="test-terraform-shared-vpc"
 
 if ls ../gcp-gke/compute.json; then
   export GOOGLE_CREDENTIALS=$(cat ../gcp-gke/compute.json)
+  export TF_VAR_google_credentials=$(cat ../gcp-gke/compute.json)
 fi
 
 if ls ../gcp-gke/vpc.json; then
@@ -45,7 +50,7 @@ fi
 
 if ! command -v go; then
   cd /tmp || mkdir /tmp && cd /tmp
-  wget -O go.tgz https://dl.google.com/go/go1.15.1.linux-amd64.tar.gz
+  wget -O go.tgz https://dl.google.com/go/go1.16.2.linux-amd64.tar.gz
   tar -C /usr/local -xvf go.tgz
   export PATH="/usr/local/go/bin:$PATH"
   export GOPATH=/opt/go/
@@ -57,8 +62,8 @@ if ! command -v unzip; then
 fi
 
 if ! command -v terraform; then
-  curl -O https://releases.hashicorp.com/terraform/0.14.2/terraform_0.14.2_linux_amd64.zip
-  unzip terraform_0.14.2_linux_amd64.zip
+  curl -O https://releases.hashicorp.com/terraform/0.14.8/terraform_0.14.8_linux_amd64.zip
+  unzip terraform_0.14.8_linux_amd64.zip
   mv terraform /usr/bin
   terraform version || return
 fi
