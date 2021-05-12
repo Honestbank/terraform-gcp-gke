@@ -71,15 +71,6 @@ terraform {
   }
 }
 
-provider "null" {
-}
-
-provider "random" {
-}
-
-provider "template" {
-}
-
 resource "random_id" "run_id" {
   byte_length = 4
 }
@@ -112,7 +103,6 @@ resource "google_project_iam_binding" "compute-network-user" {
 # GKE Cluster Config
 module "primary-cluster" {
   providers = {
-    google      = google.compute
     google-beta = google-beta.compute-beta
   }
   source = "./modules/terraform-google-kubernetes-engine/modules/beta-private-cluster-update-variant"
@@ -124,6 +114,7 @@ module "primary-cluster" {
   project_id                 = var.google_project
   name                       = local.cluster_name
   region                     = var.google_region
+  regional                   = true
   zones                      = var.zones
   network                    = local.network_name
   network_project_id         = var.shared_vpc_host_google_project
@@ -144,7 +135,6 @@ module "primary-cluster" {
   enable_intranode_visibility = true
   add_cluster_firewall_rules  = true
 
-  # Required for GKE-installed Istio
   network_policy = true
 
   // Basic Auth disabled
@@ -212,7 +202,7 @@ module "cloud_nat" {
     google = google.vpc
   }
   source        = "terraform-google-modules/cloud-nat/google"
-  version       = "~> 1.3.0"
+  version       = "~> 2.0.0"
   project_id    = var.shared_vpc_host_google_project
   region        = var.google_region
   router        = "gke-router"

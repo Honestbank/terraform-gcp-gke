@@ -1,12 +1,16 @@
 locals {
-  cluster_name           = "${var.stage}-${var.cluster_purpose}-${var.cluster_number}-${random_id.run_id.hex}"
-  network_name           = "${var.stage}-private-vpc"
-  primary_subnet_name    = "${var.stage}-private-vpc-subnet"
-  pods_ip_range_name     = "${var.stage}-private-vpc-pods"
-  services_ip_range_name = "${var.stage}-private-vpc-services"
-  primary_node_pool_name = "${local.cluster_name}-node-pool-01"
+  cluster_name = "${var.stage}-${var.cluster_purpose}-${var.cluster_number}-${random_id.run_id.hex}"
 
-  elastic_password = ""
+  network_name           = "tfmanaged-shared-vpc"
+  primary_subnet_name    = "tfmanaged-shared-vpc-subnet-01"
+  pods_ip_range_name     = "tfmanaged-shared-vpc-subnet-01-01"
+  services_ip_range_name = "tfmanaged-shared-vpc-subnet-01-02"
+
+
+  //  network_name           = "${var.stage}-private-vpc"
+  //  primary_subnet_name    = "${var.stage}-private-vpc-subnet"
+  //  pods_ip_range_name     = "${var.stage}-private-vpc-pods"
+  //  services_ip_range_name = "${var.stage}-private-vpc-services"
 }
 
 variable "google_project" {
@@ -45,7 +49,6 @@ variable "cluster_number" {
 
 variable "zones" {
   description = "Zones for the VMs in the cluster. Default is set to Jakarta (all zones)."
-  default     = ["asia-southeast2-a", "asia-southeast2-b", "asia-southeast2-c"]
 }
 
 variable "release_channel" {
@@ -72,14 +75,4 @@ variable "initial_node_count" {
 variable "machine_type" {
   default     = "n1-standard-2"
   description = "Machine types to use for the node pool."
-}
-
-variable "kiali_username" {
-  default     = "admin"
-  description = "Username for Kiali bundled with Istio."
-}
-
-variable "kiali_passphrase" {
-  default     = "admin"
-  description = "Passphrase for Kiali bundled with Istio."
 }
