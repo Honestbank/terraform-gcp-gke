@@ -29,7 +29,4 @@ module "gke" {
   minimum_node_count = var.minimum_node_count
   maximum_node_count = var.maximum_node_count
   initial_node_count = var.initial_node_count
-
-  kiali_username   = var.kiali_username
-  kiali_passphrase = var.kiali_passphrase
 }

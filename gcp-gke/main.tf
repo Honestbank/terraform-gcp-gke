@@ -220,23 +220,3 @@ module "cloud_nat" {
   create_router = true
   nat_ips       = [google_compute_address.cloud_nat_ip.self_link]
 }
-
-# Providers for Bootstrap
-provider "helm" {
-  kubernetes {
-    load_config_file = false
-
-    host                   = "https://${module.primary-cluster.endpoint}"
-    token                  = data.google_client_config.default.access_token
-    cluster_ca_certificate = base64decode(module.primary-cluster.ca_certificate)
-  }
-}
-
-provider "kubernetes" {
-  load_config_file = false
-
-  host                   = "https://${module.primary-cluster.endpoint}"
-  token                  = data.google_client_config.default.access_token
-  cluster_ca_certificate = base64decode(module.primary-cluster.ca_certificate)
-
-}

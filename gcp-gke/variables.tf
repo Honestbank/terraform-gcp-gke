@@ -73,13 +73,3 @@ variable "machine_type" {
   default     = "n1-standard-2"
   description = "Machine types to use for the node pool."
 }
-
-variable "kiali_username" {
-  default     = "admin"
-  description = "Username for Kiali bundled with Istio."
-}
-
-variable "kiali_passphrase" {
-  default     = "admin"
-  description = "Passphrase for Kiali bundled with Istio."
-}

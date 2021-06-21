@@ -23,5 +23,3 @@ To run E2E tests, navigate to the [test folder](../test) and run `go test -v -ti
 | maximum_node_count | Maximum nodes per-zone | yes | `2` |
 | initial_node_count | Initial number of nodes per-zone (should equal minimum_node_count for faster builds) | yes | `1` |
 | machine_type | Machine types to use for the GKE cluster | yes | `n1-standard-2` |
-| kiali_username | Username to be assigned to the default Istio Kiali installation | yes | `admin` |
-| kiali_passphrase | Passphrase to be assigned to the default Istio Kiali installation | yes | `admin` |
